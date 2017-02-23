@@ -8,6 +8,9 @@ BLEUnsignedCharCharacteristic CharacteristicX("4227f3b1-d6a2-4fb2-a916-3bee580a9
 BLEUnsignedCharCharacteristic CharacteristicY("5b974f46-6f48-43ee-9a55-4fb009867603", BLERead | BLENotify);
 BLEUnsignedCharCharacteristic CharacteristicZ("09a64f10-32b3-497a-93c2-c914f46eba22", BLERead | BLENotify);
 
+unsigned long loopTime = 0;
+unsigned long interruptsTime = 0;
+
 void setup() {
   Serial.begin(9600);
 
@@ -15,6 +18,11 @@ void setup() {
 
   CurieIMU.begin();
   CurieIMU.setAccelerometerRange(4);
+  CurieIMU.attachInterrupt(eventCallback);
+
+  CurieIMU.setDetectionThreshold(CURIE_IMU_MOTION, 20);
+  CurieIMU.setDetectionDuration(CURIE_IMU_MOTION, 10);
+  CurieIMU.interrupts(CURIE_IMU_MOTION);
 
   blePeripheral.setLocalName("Koozie");
   blePeripheral.setAdvertisedServiceUuid(tinyTileService.uuid());
@@ -40,20 +48,40 @@ void loop() {
     Serial.println(central.address());
 
     while (central.connected()) {
-      delay(1000);
+      loopTime = millis();
 
-      CurieIMU.readAccelerometerScaled(ax, ay, az);
+      if(abs(loopTime - interruptsTime) < 1000 ) {
+        CurieIMU.readAccelerometerScaled(ax, ay, az);
 
-      CharacteristicX.setValue(ax*100);
-      CharacteristicY.setValue(ay*100);
-      CharacteristicZ.setValue(az*100);
+        CharacteristicX.setValue(ax*100);
+        CharacteristicY.setValue(ay*100);
+        CharacteristicZ.setValue(az*100);
 
-      Serial.print("X: ");
-      Serial.print(ax);
-      Serial.print("   Y: ");
-      Serial.print(ay);
-      Serial.print("   Z: ");
-      Serial.println(az);
+        Serial.print("X: ");
+        Serial.print(ax);
+        Serial.print("   Y: ");
+        Serial.print(ay);
+        Serial.print("   Z: ");
+        Serial.println(az);
+      }
     }
+  }
+}
+
+static void eventCallback(void){
+  if (CurieIMU.getInterruptStatus(CURIE_IMU_MOTION)) {
+    if (CurieIMU.motionDetected(X_AXIS, POSITIVE))
+      Serial.println("Negative motion detected on X-axis");
+    if (CurieIMU.motionDetected(X_AXIS, NEGATIVE))
+      Serial.println("Positive motion detected on X-axis");
+    if (CurieIMU.motionDetected(Y_AXIS, POSITIVE))
+      Serial.println("Negative motion detected on Y-axis");
+    if (CurieIMU.motionDetected(Y_AXIS, NEGATIVE))
+      Serial.println("Positive motion detected on Y-axis");
+    if (CurieIMU.motionDetected(Z_AXIS, POSITIVE))
+      Serial.println("Negative motion detected on Z-axis");
+    if (CurieIMU.motionDetected(Z_AXIS, NEGATIVE))
+      Serial.println("Positive motion detected on Z-axis");
+    interruptsTime = millis();
   }
 }
