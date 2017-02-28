@@ -5,10 +5,12 @@ var noble = require('noble');
 var serviceUuids = ['19B10000E8F2537E4F6CD104768A1214'];
 var allowDuplicates = false;
 
-var Xdata = {'value': 0, 'changed': false};
-var Ydata = {'value': 0, 'changed': false};
-var Zdata = {'value': 0, 'changed': false};
+var Xdata = {'value': 0};
+var Ydata = {'value': 0};
+var Zdata = {'value': 0};
 var accelData = {'X': 0, 'Y': 0, 'Z': 0};
+
+var MESSAGE_INTERVAL_MS = 250;
 
 function sendMessage(message) {
   console.log('Sending message:', message);
@@ -65,42 +67,33 @@ noble.on('discover', function(peripheral) {
         characteristicX.on('data', function(data, isNotification) {
           if(Xdata.value !== data.readUInt8(0)) {
             Xdata.value = data.readUInt8(0);
-            Xdata.changed = true;
 
-            updateAccelData();
+            setTimeout(sendAccelData(), MESSAGE_INTERVAL_MS);
           }
         });
 
         characteristicY.on('data', function(data, isNotification) {
           if(Ydata.value !== data.readUInt8(0)) {
             Ydata.value = data.readUInt8(0);
-            Ydata.changed = true;
 
-            updateAccelData();
+            setTimeout(sendAccelData(), MESSAGE_INTERVAL_MS);
           }
         });
 
         characteristicZ.on('data', function(data, isNotification) {
           if(Zdata.value !== data.readUInt8(0)) {
             Zdata.value = data.readUInt8(0);
-            Zdata.changed = true;
 
-            updateAccelData();
+            setTimeout(sendAccelData(), MESSAGE_INTERVAL_MS);
           }
         });
 
-        function updateAccelData() {
-          if(Xdata.changed && Ydata.changed && Zdata.changed) {
-            accelData.X = Xdata.value;
-            accelData.Y = Ydata.value;
-            accelData.Z = Zdata.value;
+        function sendAccelData() {
+          accelData.X = Xdata.value;
+          accelData.Y = Ydata.value;
+          accelData.Z = Zdata.value;
 
-            Xdata.changed = false;
-            Ydata.changed = false;
-            Zdata.changed = false;
-
-            sendMessage(accelData);
-          }
+          sendMessage(accelData);
         }
       });
     });
