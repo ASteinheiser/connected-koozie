@@ -9,6 +9,7 @@
   "author": "ASteinheiser",
   "license": "MIT",
   "dependencies": {
+    "meshblu": "^2.2.7",
     "noble": "^1.8.0"
   }
 }

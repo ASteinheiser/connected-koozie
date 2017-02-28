@@ -1,3 +1,5 @@
+var meshblu = require('meshblu');
+var meshbluJSON = require('./meshblu.json');
 var noble = require('noble');
 
 var serviceUuids = ['19B10000E8F2537E4F6CD104768A1214'];
@@ -7,6 +9,23 @@ var Xdata = {'value': 0, 'changed': false};
 var Ydata = {'value': 0, 'changed': false};
 var Zdata = {'value': 0, 'changed': false};
 var accelData = {'X': 0, 'Y': 0, 'Z': 0};
+
+function sendMessage(message) {
+  console.log('Sending message:', message);
+  conn.message({ "devices": ["*"], "payload": message });
+}
+
+var conn = new meshblu({ resolveSrv: true, "uuid": meshbluJSON.uuid, "token": meshbluJSON.token });
+
+conn.connect();
+
+conn.on('notReady', function(data) {
+  console.log('UUID FAILED AUTHENTICATION!', data);
+});
+
+conn.on('ready', function(data) {
+  console.log('UUID AUTHENTICATED!', data);
+});
 
 noble.on('stateChange', function(state) {
   if (state === 'poweredOn') {
@@ -80,7 +99,7 @@ noble.on('discover', function(peripheral) {
             Ydata.changed = false;
             Zdata.changed = false;
 
-            console.log(accelData);
+            sendMessage(accelData);
           }
         }
       });
