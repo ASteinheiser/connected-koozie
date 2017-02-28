@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var meshblu = require('meshblu');
 var meshbluJSON = require('./meshblu.json');
 var noble = require('noble');
@@ -8,12 +9,18 @@ var allowDuplicates = false;
 var Xdata = {'value': 0};
 var Ydata = {'value': 0};
 var Zdata = {'value': 0};
-var accelData = {'X': 0, 'Y': 0, 'Z': 0};
 
-function sendMessage(message) {
-  console.log('Sending message:', message);
-  conn.message({ "devices": ["*"], "payload": message });
+var sampleSet = [];
+var sipGesture = false;
+
+function sendMessageImmediate() {
+  console.log('Sending message:', { sipGesture: sipGesture, data: sampleSet});
+  conn.message({ "devices": ["*"], "payload": { sipGesture: sipGesture, data: sampleSet} });
+  sampleSet = [];
+  sipGesture = false;
 }
+
+var sendMessage = _.debounce(sendMessageImmediate, 1000);
 
 var conn = new meshblu({ resolveSrv: true, "uuid": meshbluJSON.uuid, "token": meshbluJSON.token });
 
@@ -33,6 +40,11 @@ noble.on('stateChange', function(state) {
   } else {
     noble.stopScanning();
   }
+});
+
+
+process.stdin.on('data', function(data){
+  sipGesture = true;
 });
 
 noble.on('discover', function(peripheral) {
@@ -87,11 +99,11 @@ noble.on('discover', function(peripheral) {
         });
 
         function sendAccelData() {
-          accelData.X = Xdata.value;
-          accelData.Y = Ydata.value;
-          accelData.Z = Zdata.value;
+          var accelData = { X: Xdata.value, Y: Ydata.value, Z: Zdata.value };
 
-          sendMessage(accelData);
+          sampleSet.push(accelData);
+
+          sendMessage();
         }
       });
     });
