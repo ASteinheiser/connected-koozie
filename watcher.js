@@ -1,7 +1,6 @@
 var noble = require('noble');
 
 var serviceUuids = ['19B10000E8F2537E4F6CD104768A1214'];
-
 var allowDuplicates = false;
 
 var Xdata = {'value': 0, 'changed': false};
@@ -76,9 +75,11 @@ noble.on('discover', function(peripheral) {
             accelData.X = Xdata.value;
             accelData.Y = Ydata.value;
             accelData.Z = Zdata.value;
+
             Xdata.changed = false;
             Ydata.changed = false;
             Zdata.changed = false;
+
             console.log(accelData);
           }
         }

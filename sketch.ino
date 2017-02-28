@@ -21,7 +21,7 @@ void setup() {
   CurieIMU.attachInterrupt(eventCallback);
 
   CurieIMU.setDetectionThreshold(CURIE_IMU_MOTION, 20);
-  CurieIMU.setDetectionDuration(CURIE_IMU_MOTION, 10);
+  CurieIMU.setDetectionDuration(CURIE_IMU_MOTION, 5);
   CurieIMU.interrupts(CURIE_IMU_MOTION);
 
   blePeripheral.setLocalName("Koozie");
