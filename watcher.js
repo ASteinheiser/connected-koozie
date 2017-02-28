@@ -10,8 +10,6 @@ var Ydata = {'value': 0};
 var Zdata = {'value': 0};
 var accelData = {'X': 0, 'Y': 0, 'Z': 0};
 
-var MESSAGE_INTERVAL_MS = 250;
-
 function sendMessage(message) {
   console.log('Sending message:', message);
   conn.message({ "devices": ["*"], "payload": message });
@@ -68,7 +66,7 @@ noble.on('discover', function(peripheral) {
           if(Xdata.value !== data.readUInt8(0)) {
             Xdata.value = data.readUInt8(0);
 
-            setTimeout(sendAccelData(), MESSAGE_INTERVAL_MS);
+            sendAccelData();
           }
         });
 
@@ -76,7 +74,7 @@ noble.on('discover', function(peripheral) {
           if(Ydata.value !== data.readUInt8(0)) {
             Ydata.value = data.readUInt8(0);
 
-            setTimeout(sendAccelData(), MESSAGE_INTERVAL_MS);
+            sendAccelData();
           }
         });
 
@@ -84,7 +82,7 @@ noble.on('discover', function(peripheral) {
           if(Zdata.value !== data.readUInt8(0)) {
             Zdata.value = data.readUInt8(0);
 
-            setTimeout(sendAccelData(), MESSAGE_INTERVAL_MS);
+            sendAccelData();
           }
         });
 
