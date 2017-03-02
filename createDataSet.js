@@ -12,7 +12,7 @@ var meshbluFirehose = new MeshbluFirehose({
 });
 
 meshbluFirehose.connect(function(error) {
-  console.log('Connected');
+  if (error) console.log(error);
 });
 
 meshbluFirehose.on('message', function(message) {
@@ -20,5 +20,5 @@ meshbluFirehose.on('message', function(message) {
   if (message.data.payload.gesture[0]) pass = 1;
 
   trainingData = [ message.data.payload.data, pass ];
-  console.log('Training data:', trainingData, '\n');
+  console.log(trainingData);
 });
