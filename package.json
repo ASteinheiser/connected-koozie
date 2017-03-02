@@ -9,7 +9,6 @@
   "author": "ASteinheiser",
   "license": "MIT",
   "dependencies": {
-    "lodash": "^4.17.4",
     "meshblu": "^2.2.7",
     "meshblu-firehose-socket.io": "^2.1.0",
     "noble": "^1.8.0"
