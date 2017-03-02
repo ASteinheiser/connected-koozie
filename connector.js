@@ -20,8 +20,6 @@ function sendMessageImmediate() {
   sipGesture = false;
 }
 
-var sendMessage = _.debounce(sendMessageImmediate, 1000);
-
 var conn = new meshblu({ resolveSrv: true, "uuid": meshbluJSON.uuid, "token": meshbluJSON.token });
 
 conn.connect();
@@ -42,8 +40,16 @@ noble.on('stateChange', function(state) {
   }
 });
 
-process.stdin.on('data', function(data){
-  sipGesture = true;
+process.stdin.on('data', function(keyPress) {
+  var space = new Buffer('\n', 'utf8');
+
+  if (!keyPress.equals(space)) {
+    sipGesture = true;
+  } else {
+    sipGesture = false;
+  }
+
+  sendMessageImmediate();
 });
 
 noble.on('discover', function(peripheral) {
@@ -77,7 +83,7 @@ noble.on('discover', function(peripheral) {
           if(Xdata.value !== data.readUInt8(0)) {
             Xdata.value = data.readUInt8(0);
 
-            sendAccelData();
+            setAccelData();
           }
         });
 
@@ -85,7 +91,7 @@ noble.on('discover', function(peripheral) {
           if(Ydata.value !== data.readUInt8(0)) {
             Ydata.value = data.readUInt8(0);
 
-            sendAccelData();
+            setAccelData();
           }
         });
 
@@ -93,17 +99,12 @@ noble.on('discover', function(peripheral) {
           if(Zdata.value !== data.readUInt8(0)) {
             Zdata.value = data.readUInt8(0);
 
-            sendAccelData();
+            setAccelData();
           }
         });
 
-        function sendAccelData() {
-          sampleSet.push([
-            Xdata.value,
-            Ydata.value,
-            Zdata.value
-          ]);
-          sendMessage();
+        function setAccelData() {
+          sampleSet = [ Xdata.value, Ydata.value, Zdata.value ];
         }
       });
     });
