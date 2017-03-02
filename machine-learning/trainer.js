@@ -1,6 +1,6 @@
 var _ = require('lodash');
 var meshblu = require('meshblu');
-var meshbluJSON = require('./meshblu.json');
+var meshbluJSON = require('../meshblu.json');
 var noble = require('noble');
 
 var serviceUuids = ['19B10000E8F2537E4F6CD104768A1214'];

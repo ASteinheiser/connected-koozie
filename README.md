@@ -4,6 +4,7 @@ Strap a Tiny Tile to any koozie and make it a smart koozie! Using the built in a
 
 ## Usage
 
+#### Machine Learning
 - Run trainer.js to start sending your accelerometer values to Meshblu. Press [Enter] to send current values with gesture flag 'false'. Type any key, then [Enter] to send values with gesture flag 'true'.
 
 - Run createDataSet.js to create a json file containing your accelerometer values as such: `node createDataSet.js > trainingSet.json`

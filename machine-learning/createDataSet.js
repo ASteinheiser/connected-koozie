@@ -1,4 +1,4 @@
-var meshbluJSON = require('./meshblu.json');
+var meshbluJSON = require('../meshblu.json');
 var MeshbluFirehose = require('meshblu-firehose-socket.io');
 
 var meshbluFirehose = new MeshbluFirehose({
