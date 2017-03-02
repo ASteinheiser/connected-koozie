@@ -10,13 +10,13 @@ var Xdata = {'value': 0};
 var Ydata = {'value': 0};
 var Zdata = {'value': 0};
 
-var sampleSet = [];
+var snapshot = [];
 var sipGesture = false;
 
 function sendMessageImmediate() {
-  console.log('Sending message:', { data: sampleSet, gesture: [ sipGesture ] });
-  conn.message({ "devices": ["*"], "payload": { data: sampleSet, gesture: [ sipGesture ] } });
-  sampleSet = [];
+  console.log('Sending message:', { data: snapshot, gesture: [ sipGesture ] });
+  conn.message({ "devices": ["*"], "payload": { data: snapshot, gesture: [ sipGesture ] } });
+  snapshot = [];
   sipGesture = false;
 }
 
@@ -104,7 +104,7 @@ noble.on('discover', function(peripheral) {
         });
 
         function setAccelData() {
-          sampleSet = [ Xdata.value, Ydata.value, Zdata.value ];
+          snapshot = [ Xdata.value, Ydata.value, Zdata.value ];
         }
       });
     });
