@@ -494,7 +494,7 @@
     "color": true,
     "interactive": true,
     "cwd": "/Users/Andrew/Projects/Octoblu/connected-koozie",
-    "pathToModel": "predictionModel",
+    "pathToModel": "predictionModel.json",
     "mu": [
       114.74018126888218,
       106.49244712990937,
