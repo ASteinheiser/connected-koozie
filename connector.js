@@ -14,8 +14,8 @@ var sampleSet = [];
 var sipGesture = false;
 
 function sendMessageImmediate() {
-  console.log('Sending message:', { input: sampleSet, output: [ sipGesture ] });
-  conn.message({ "devices": ["*"], "payload": { input: sampleSet, output: [ sipGesture ] } });
+  console.log('Sending message:', { data: sampleSet, gesture: [ sipGesture ] });
+  conn.message({ "devices": ["*"], "payload": { data: sampleSet, gesture: [ sipGesture ] } });
   sampleSet = [];
   sipGesture = false;
 }
@@ -41,7 +41,6 @@ noble.on('stateChange', function(state) {
     noble.stopScanning();
   }
 });
-
 
 process.stdin.on('data', function(data){
   sipGesture = true;
@@ -99,12 +98,11 @@ noble.on('discover', function(peripheral) {
         });
 
         function sendAccelData() {
-          var accelData = {
-            X: Xdata.value,
-            Y: Ydata.value,
-            Z: Zdata.value
-          };
-          sampleSet.push(accelData);
+          sampleSet.push([
+            Xdata.value,
+            Ydata.value,
+            Zdata.value
+          ]);
           sendMessage();
         }
       });

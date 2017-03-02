@@ -16,5 +16,9 @@ meshbluFirehose.connect(function(error) {
 });
 
 meshbluFirehose.on('message', function(message) {
-  console.log(JSON.stringify(message.data.payload, null, 2));
+  var pass = 0;
+  if (message.data.payload.gesture[0]) pass = 1;
+
+  trainingData = [ message.data.payload.data, pass ];
+  console.log('Training data:', trainingData, '\n');
 });
