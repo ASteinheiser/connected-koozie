@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var meshblu = require('meshblu');
 var meshbluJSON = require('./meshblu.json');
 var noble = require('noble');
@@ -12,14 +13,17 @@ var Ydata = {'value': 0};
 var Zdata = {'value': 0};
 
 var snapshot = [];
+var message = { sip: true };
 
 var predictor = new svm.CSVC();
 predictor._restore(predictionModel);
 
-function sendMessage(message) {
+function sendMessage() {
   console.log('Sending message:', message);
   conn.message({ 'devices': ['*'], 'payload': message });
 }
+
+var sendSipMessage = _.debounce(sendMessage, 1500, { leading: true, trailing: false, maxWait: 3000 });
 
 var conn = new meshblu({ resolveSrv: true, 'uuid': meshbluJSON.uuid, 'token': meshbluJSON.token });
 
@@ -72,7 +76,7 @@ noble.on('discover', function(peripheral) {
           if(Xdata.value !== data.readUInt8(0)) {
             Xdata.value = data.readUInt8(0);
 
-            setAccelData();
+            checkForSip();
           }
         });
 
@@ -80,7 +84,7 @@ noble.on('discover', function(peripheral) {
           if(Ydata.value !== data.readUInt8(0)) {
             Ydata.value = data.readUInt8(0);
 
-            setAccelData();
+            checkForSip();
           }
         });
 
@@ -88,19 +92,16 @@ noble.on('discover', function(peripheral) {
           if(Zdata.value !== data.readUInt8(0)) {
             Zdata.value = data.readUInt8(0);
 
-            setAccelData();
+            checkForSip();
           }
         });
 
-        function setAccelData() {
-          snapshot = [ Xdata.value, Ydata.value, Zdata.value ];
-          console.log('snapshot:', snapshot);
-
-          checkForSip();
-        }
-
         function checkForSip() {
-          console.log(predictor.predictSync(snapshot));
+          snapshot = [ Xdata.value, Ydata.value, Zdata.value ];
+
+          if (predictor.predictSync(snapshot)) {
+            sendSipMessage();
+          }
         }
       });
     });
