@@ -13,6 +13,9 @@ var Zdata = {'value': 0};
 
 var snapshot = [];
 
+var predictor = new svm.CSVC();
+predictor._restore(predictionModel);
+
 function sendMessage(message) {
   console.log('Sending message:', message);
   conn.message({ 'devices': ['*'], 'payload': message });
@@ -91,13 +94,13 @@ noble.on('discover', function(peripheral) {
 
         function setAccelData() {
           snapshot = [ Xdata.value, Ydata.value, Zdata.value ];
-          console.log(snapshot);
+          console.log('snapshot:', snapshot);
 
           checkForSip();
         }
 
         function checkForSip() {
-
+          console.log(predictor.predictSync(snapshot));
         }
       });
     });
